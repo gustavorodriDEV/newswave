@@ -1,0 +1,156 @@
+body, html {
+  height: 60%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(246, 246, 246, 0.7); 
+  font-family: Arial, sans-serif;
+}
+
+.login-cadastro {
+  width: 300px;
+  perspective: 1000px;
+}
+
+
+.login-cadastro .inner-box {
+  width: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+
+.login, .cadastro {
+  backface-visibility: hidden;
+  position: absolute;
+  width: 100%;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgb(240, 240, 240);
+  border-radius: 30px;
+}
+
+
+.cadastro {
+  transform: rotateY(180deg);
+}
+
+
+.login-cadastro.flipped .inner-box {
+  transform: rotateY(180deg);
+}
+
+
+.password-container {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.custom-input {
+  padding-right: 30px;
+  width: 92%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+}
+
+
+.password-container input[type="password"],
+.password-container input[type="text"] {
+  padding-right: 30px;
+  width: 92%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+}
+.password-container i {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+/* Botões de ação */
+input[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  background-color: #007BFF;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.toggle-form {
+  display: block;
+  margin-top: 15px;
+  text-align: center;
+  cursor: pointer;
+  color: #007BFF;
+}
+
+@media (max-width: 600px) {
+  .login-cadastro {
+    max-width: 65%; 
+    
+  }
+
+
+  .custom-input, 
+  .password-container input[type="password"],
+  .password-container input[type="text"] {
+    width: 100%; /* Ocupar 100% da largura disponível */
+  }
+
+  .login, .cadastro {
+    left: 100000;
+  }
+
+  input[type="submit"] {
+    padding: 5px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  .custom-input {
+    padding: 8px;
+    font-size: 14px; 
+  }
+
+  .password-container {
+    position: relative;
+  }
+  
+  .password-container i {
+    position: absolute;
+    right: -10px; 
+    top: 50%;   
+
+  }
+  
+  .password-container i:hover {
+    color: #0056b3; 
+  }
+  
+  
+  input[type="submit"] {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .toggle-form {
+    font-size: 13px;
+  }
+}
+

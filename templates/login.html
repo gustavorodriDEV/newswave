@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/cadastro-login.css') }}">
+    <script src="{{ url_for('static', filename='js/cadastro-login.js') }}"></script>
+</head>
+<body>
+    <div class="login-cadastro" id="loginCadastro">
+        <div class="inner-box">
+            <div class="login">
+                <h3>Login </h3><br>
+                <form method="POST" action="{{ url_for('login') }}">
+					<input type="text" id="email" name="email" placeholder="Email" required class="custom-input"><br><br>
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" placeholder="Senha" required class="custom-input">
+                        <i class="fas fa-eye" id="togglePassword"></i>
+                    </div><br><br>
+                    <input type="submit" value="Entrar">
+                    <span class="toggle-form" onclick="flipForm()">Não tem uma conta? Cadastre-se</span>
+                </form>
+            </div>
+            <div class="cadastro">
+                <h3>Cadastre-se</h3>
+                <form method="POST" action="{{ url_for('cadastro') }}">
+                    <input type="text" id="usernameCadastro" name="username" placeholder="Nome de usuário" required class="custom-input"><br><br>
+                    <input type="email" id="email" name="email" placeholder="Email" required class="custom-input"><br><br>
+                    <div class="password-container">
+                        <input type="password" id="password1" name="password" placeholder="Senha" required>
+                        <i class="fas fa-eye" id="togglePassword1"></i>
+                    </div><br>
+                    <div class="password-container">
+                        <input type="password" id="password2" name="confirm_password" placeholder="Confirmar senha" required>
+                        <i class="fas fa-eye" id="togglePassword2"></i>
+                    </div><br><br>
+                    <input type="submit" value="Cadastrar">
+                    <span class="toggle-form" onclick="flipForm()">Já tem uma conta? Faça login</span>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+	
+    <script>
+		function flipForm() {
+		const container = document.getElementById('loginCadastro');
+		container.classList.toggle('flipped');
+		}
+
+		function togglePasswordVisibility(toggleId, passwordId) {
+		const togglePassword = document.getElementById(toggleId);
+		const passwordField = document.getElementById(passwordId);
+
+		togglePassword.addEventListener('click', function () {
+			const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+			passwordField.setAttribute('type', type);
+			this.classList.toggle('fa-eye');
+			this.classList.toggle('fa-eye-slash');
+		});
+		}
+
+		togglePasswordVisibility('togglePassword', 'password');
+		togglePasswordVisibility('togglePassword1', 'password1');
+		togglePasswordVisibility('togglePassword2', 'password2');
+    </script>
+</html>
