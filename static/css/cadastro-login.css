@@ -109,7 +109,7 @@ input[type="submit"]:hover {
   .custom-input, 
   .password-container input[type="password"],
   .password-container input[type="text"] {
-    width: 100%; /* Ocupar 100% da largura disponível */
+    width: 100%; 
   }
 
   .login, .cadastro {

@@ -1,13 +1,15 @@
-from flask import Flask, render_template, request, redirect, flash, url_for, session
-from db import conexao_db, fechar_conexao
+from flask import Flask, render_template, request, redirect, flash, url_for, session, make_response
+from config.db import conexao_db, fechar_conexao
 from usuario import Usuario
 from werkzeug.security import check_password_hash
-from secret_key import Secret_key
+from config.secret_key import Secret_key
+from noticias import Noticias,salvar_noticias_db, buscar_noticias_db
+
 
 app = Flask(__name__)
-@app.route('/')
-def home():
-    return render_template('teste.html')
+
+app.config['SECRET_KEY'] = Secret_key.sessao()
+
 
 @app.route('/teste_conexao')
 def teste_conexao():
@@ -63,11 +65,26 @@ def cadastro():
 
 @app.route('/index')
 def index():
-    if 'email' in session:  
-        return render_template('index.html', email=session['email'])
-    else:
+    if 'email' not in session:
         flash('Você precisa fazer login para acessar esta página.', 'erro')
         return redirect(url_for('login'))
+
+    noticias_classe = Noticias()
+    noticias = noticias_classe.buscar_noticias()
+
+    if noticias:
+        salvar_noticias_db(noticias)
+
+    noticias_do_banco = buscar_noticias_db()
+
+    response = make_response(render_template('index.html', 
+                                             email=session['email'], 
+                                             articles=noticias_do_banco))
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+
+    return response
 
 
 @app.route('/logout', methods=['GET', 'POST'])

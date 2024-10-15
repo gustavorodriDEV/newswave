@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
 from werkzeug.security import generate_password_hash
-from db import conexao_db, fechar_conexao
+from config.db import conexao_db, fechar_conexao
 
 app = Flask(__name__) 
 
