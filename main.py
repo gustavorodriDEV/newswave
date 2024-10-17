@@ -86,6 +86,27 @@ def index():
 
     return response
 
+@app.route('/noticia_completa/<int:noticia_id>')
+def noticia_completa(noticia_id):
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    
+    conn = conexao_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM noticias WHERE id = %s", (noticia_id,))
+    noticia = cursor.fetchone()
+    cursor.close()
+    fechar_conexao(conn)
+
+    if noticia:
+        response = make_response(render_template('noticia_completa.html', noticia=noticia))
+        response.headers['Cache-Control'] = 'private, no-store, max-age=0, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '-1'
+        return response
+    else:
+        flash("Notícia não encontrada", "erro")
+        return redirect(url_for('index'))
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():

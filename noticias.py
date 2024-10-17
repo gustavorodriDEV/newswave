@@ -23,6 +23,9 @@ class Noticias:
         response = requests.get(self.base_url, params=params)
         if response.status_code == 200:
             articles = response.json()['articles']
+        
+            for article in articles:
+                article['category'] = categoria 
             return articles
         else:
             print(f"Erro: {response.status_code}")
@@ -39,21 +42,20 @@ def salvar_noticias_db(noticias):
         imagemURL = noticia.get('urlToImage', 'Imagem não disponível')
         link = noticia.get('url', 'Link não disponível')
         data_publicacao = noticia.get('publishedAt', None)
+        autor = noticia.get('author', 'Autor não disponível')
 
-        if data_publicacao:
-            data_publicacao = datetime.strptime(data_publicacao, "%Y-%m-%dT%H:%M:%SZ")
-            
-            ano = data_publicacao.strftime("%Y")
-            mes = data_publicacao.strftime("%m")  
-            dia = data_publicacao.strftime("%d") 
-            
-            data_publicacao_formatada = f"{ano}/ mês/ {dia}"
+        cursor.execute("SELECT id FROM noticias WHERE link = %s", (link,))
+        resultado = cursor.fetchone()
+
+        if resultado is None:
+            if data_publicacao:
+                data_publicacao = datetime.strptime(data_publicacao, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d %H:%M:%S")
 
             sql = """
-            INSERT INTO noticias (titulo, descricao, imagemURL, link, dataPublicacao)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO noticias (titulo, descricao, imagemURL, link, dataPublicacao, autor)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """
-            valores = (titulo, descricao, imagemURL, link, data_publicacao)
+            valores = (titulo, descricao, imagemURL, link, data_publicacao, autor)
             cursor.execute(sql, valores)
 
     conn.commit()
@@ -62,9 +64,9 @@ def salvar_noticias_db(noticias):
 
 def buscar_noticias_db():
     conn = conexao_db()
-    cursor = conn.cursor(dictionary=True) 
-    cursor.execute("SELECT titulo, descricao, imagemURL, link, dataPublicacao FROM noticias")
-    noticias = cursor.fetchall() 
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT id,titulo, descricao, imagemURL, link, dataPublicacao, autor, categoria FROM noticias")
+    noticias = cursor.fetchall()
     cursor.close()
     fechar_conexao(conn)
     return noticias
