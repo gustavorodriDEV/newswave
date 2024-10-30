@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from config.db import conexao_db, fechar_conexao
 
-app = Flask(__name__) 
+app = Flask(__name__)
 
 class Usuario:
-    def __init__(self, nome, email, senha) :
+    def __init__(self, nome=None, email=None, senha=None):
         self.nome = nome
         self.email = email
         self.senha = senha
@@ -27,28 +27,22 @@ class Usuario:
                 fechar_conexao(con)
         else:
             return False  
-    def login(self):
-            con = conexao_db()
-            if con:
-                try:
-                    cursor = con.cursor()
-                    cursor.execute("SELECT senha FROM usuarios WHERE email = %s", (self.email,))
-                    result = cursor.fetchone()
 
-                    if result and result[0] == self.senha:  
-                        flash('Login realizado com sucesso!', 'sucesso')
-                        return redirect(url_for('index'))  # Redireciona para o index após o login bem-sucedido
-                    else:
-                        flash('Email ou senha incorretos.', 'erro')
-                except Exception as e:
-                    print(f"Error: {e}")
-                finally:
-                    fechar_conexao(con)
-                    return render_template('login.html')
+    def buscar_por_email(self, email):
+        con = conexao_db()
+        if con:
+            try:
+                cursor = con.cursor()
+                cursor.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
+                usuario = cursor.fetchone()
+                return usuario
+            except Exception as e:
+                print(f"Erro ao buscar usuário: {e}")
+                return None
+            finally:
+                fechar_conexao(con)
 
-    @app.route('/dashboard')
-    def dashboard():
-        usuario = request.args.get('usuario')
-        if usuario:
-            return f'Bem-vindo, {usuario}!'
-        return redirect('/index')
+    def validar_login(self, senha_digitada):
+        return check_password_hash(self.senha, senha_digitada)
+
+

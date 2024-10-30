@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ noticia['titulo'] }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+   
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/discutir.css') }}">
+
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg bg-light ">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">NewsWave</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Notícias</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Categorias</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contato</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+   <br>
+    <div class="container">
+        <h1>{{ noticia['titulo'] }}</h1>
+        <p>Autor: {{ noticia['autor'] or 'Autor não disponível' }}</p>
+        <img src="{{ noticia['imagemURL'] }}" alt="Imagem da Notícia" style="max-width: 100%;">
+        <p>{{ noticia['descricao'] }}</p>
+    </div>
+
+    <div class="comment-section">
+       
+ 
+
+         <!-- Formulário para Deixar um Comentário -->
+         <div class="fixed-comment-btn">
+            <button id="commentBtn" class="btn btn-primary">Comentar</button>
+        </div>
+        
+        <!-- Formulário de comentário oculto inicialmente -->
+        <div class="comment-form-container" id="commentForm">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="new-comment card my-5 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Deixe um comentário</h5>
+                            <form method="POST" action="{{ url_for('comentario', noticia_id=noticia_id) }}">
+                                <div class="mb-3">
+                                    <textarea name="comentario" class="form-control" placeholder="Escreva seu comentário" rows="4" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Formulário para Novo Comentário -->
+    <div class="container my-5">
+    <!-- Seção de Comentários -->
+    <h4 class="text-center mb-4">Comentários</h4>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% if comentarios %}
+                {% for comentario in comentarios %}
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">{{ comentario['nome'] }}</h5>
+                            <small class="text-muted">{{ comentario['data'] }}</small>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ comentario['conteudo'] }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-muted">Não há comentários ainda.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('commentBtn').addEventListener('click', function() {
+        // Alterna a classe 'active' no formulário
+        const commentForm = document.getElementById('commentForm');
+        commentForm.classList.toggle('active');
+    });
+</script>
+    <!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
