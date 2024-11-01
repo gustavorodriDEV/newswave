@@ -6,7 +6,7 @@
     <title>Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/cadastro-login.css') }}">
-    <script src="{{ url_for('static', filename='js/cadastro-login.js') }}"></script>
+
 </head>
 <body>
     <div class="login-cadastro" id="loginCadastro">
@@ -42,28 +42,8 @@
             </div>
         </div>
     </div>
+
+    <script src="{{ url_for('static', filename='.js/cadastro-login.js') }}"></script>
+
 </body>
-	
-    <script>
-		function flipForm() {
-		const container = document.getElementById('loginCadastro');
-		container.classList.toggle('flipped');
-		}
-
-		function togglePasswordVisibility(toggleId, passwordId) {
-		const togglePassword = document.getElementById(toggleId);
-		const passwordField = document.getElementById(passwordId);
-
-		togglePassword.addEventListener('click', function () {
-			const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-			passwordField.setAttribute('type', type);
-			this.classList.toggle('fa-eye');
-			this.classList.toggle('fa-eye-slash');
-		});
-		}
-
-		togglePasswordVisibility('togglePassword', 'password');
-		togglePasswordVisibility('togglePassword1', 'password1');
-		togglePasswordVisibility('togglePassword2', 'password2');
-    </script>
 </html>

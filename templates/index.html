@@ -58,8 +58,7 @@
         {% for article in articles %}
         <div class="col-md-4">
             <div class="card-news">
-                <img src="{{ article['imagemURL'] or 'https://via.placeholder.com/350x200' }}" alt="Imagem da Notícia">
-                
+                <img src="{{ article['imagemURL'] or 'https://placehold.jp/cccccc/ffffff/350x200.png?text=Imagem+Não+Disponível' }}" alt="Imagem não disponível :(">
                 <div class="card-body">
                     <div class="card-author">
                         <p>Autor: {{ article['autor'] or 'Autor não disponível' }}</p>

@@ -32,7 +32,7 @@ class Comentario:
         conn = conexao_db()
         cursor = conn.cursor(dictionary=True)
         sql = """
-            SELECT c.conteudo, c.data, u.nome
+            SELECT c.id, c.conteudo, c.data, u.nome
             FROM comentarios c
             JOIN usuarios u ON c.usuario_id = u.id
             WHERE c.noticia_id = %s;
@@ -47,18 +47,57 @@ class Comentario:
         finally:
             cursor.close()
             fechar_conexao(conn)
- 
+
     @staticmethod
     def contar_comentarios(noticia_id):
+        conn = conexao_db()
+        cursor = conn.cursor()
         try:
-            conn = conexao_db()
-            cursor = conn.cursor()
             cursor.execute("SELECT COUNT(*) FROM comentarios WHERE noticia_id = %s", (noticia_id,))
             total = cursor.fetchone()[0] 
             return total
         except Exception as e:
             print(f"Erro ao contar comentários: {e}")
             return 0
+        finally:
+            cursor.close()
+            fechar_conexao(conn)
+
+    @staticmethod
+    def deletar_comentario(comentario_id):
+        conn = conexao_db()
+        cursor = conn.cursor()
+        sql = "DELETE FROM comentarios WHERE id = %s"
+       
+        try:
+            cursor.execute(sql, (comentario_id,))
+            conn.commit()
+            return cursor.rowcount > 0 
+        except Exception as e:
+            print(f"Erro ao deletar comentário: {e}")
+            return False
+        finally:
+            cursor.close()
+            fechar_conexao(conn)
+
+    @staticmethod
+    def editar_comentario(comentario_id, novo_conteudo):
+        conn = conexao_db()
+        cursor = conn.cursor()
+        sql = """
+            UPDATE comentarios
+            SET conteudo = %s, data = %s
+            WHERE id = %s
+        """
+        valores = (novo_conteudo, datetime.now(), comentario_id)
+        
+        try:
+            cursor.execute(sql, valores)
+            conn.commit()
+            return cursor.rowcount > 0  
+        except Exception as e:
+            print(f"Erro ao editar comentário: {e}")
+            return False
         finally:
             cursor.close()
             fechar_conexao(conn)

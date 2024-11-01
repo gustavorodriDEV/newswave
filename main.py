@@ -4,7 +4,7 @@ from usuario import Usuario
 from werkzeug.security import check_password_hash
 from config.secret_key import Secret_key
 from noticias import Noticias, salvar_noticias_db, buscar_noticias_db
-from comentario_newswave import Comentario
+from comentario import Comentario
 from datetime import datetime
 
 app = Flask(__name__)
@@ -57,12 +57,8 @@ def cadastro():
 
 @app.route('/index')
 def index():
-    if 'email' not in session:
-        flash('Você precisa fazer login para acessar esta página.', 'erro')
-        return redirect(url_for('login'))
-
     noticias_classe = Noticias()
-    noticias = noticias_classe.buscar_noticias() 
+    noticias = noticias_classe.buscar_noticias()
 
     if noticias:
         salvar_noticias_db(noticias)
@@ -76,8 +72,10 @@ def index():
             print("Noticia ID não encontrado")
             noticia['comentarios_count'] = 0
 
+    email = session.get('email', None)
+
     response = make_response(render_template('index.html',
-                                             email=session['email'], 
+                                             email=email, 
                                              articles=noticias_do_banco))
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
     response.headers['Pragma'] = 'no-cache'
@@ -105,6 +103,7 @@ def discutir(noticia_id):
     else:
         flash("Notícia não encontrada", "erro")
         return redirect(url_for('index'))
+
 
 
 @app.route('/comentarios/<int:noticia_id>', methods=['GET', 'POST'])
@@ -143,6 +142,34 @@ def comentario(noticia_id):
         else:
             return jsonify({'message': 'Nenhum comentário encontrado para esta notícia.'}), 404
 
+@app.route('/comentarios/deletar/<int:comentario_id>', methods=['DELETE'])
+def deletar_comentario_route(comentario_id):
+    if 'email' not in session:
+        return jsonify({"erro": "Você precisa estar logado para deletar um comentário."}), 403
+
+    resultado = Comentario.deletar_comentario(comentario_id)
+
+    if resultado:
+        return jsonify({"mensagem": "Comentário deletado com sucesso."}), 200
+    else:
+        return jsonify({"erro": "Erro ao deletar o comentário."}), 500
+
+
+@app.route('/comentarios/editar/<int:comentario_id>', methods=['POST'])
+def editar_comentario_route(comentario_id):
+    if 'email' not in session:
+        return jsonify({"erro": "Você precisa estar logado para editar um comentário."}), 403
+
+    novo_conteudo = request.form.get('conteudo')
+    if not novo_conteudo:
+        return jsonify({"erro": "O conteúdo do comentário não pode estar vazio."}), 400
+
+    resultado = Comentario.editar_comentario(comentario_id, novo_conteudo)
+
+    if resultado:
+        return jsonify({"mensagem": "Comentário editado com sucesso."}), 200
+    else:
+        return jsonify({"erro": "Erro ao editar o comentário."}), 500
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
