@@ -4,7 +4,7 @@ function flipForm() {
     container.classList.toggle('flipped');
 }
 
-// Função para alternar a visibilidade da senha
+
 function togglePasswordVisibility(toggleId, passwordId) {
     const togglePassword = document.getElementById(toggleId);
     const passwordField = document.getElementById(passwordId);
@@ -15,6 +15,19 @@ function togglePasswordVisibility(toggleId, passwordId) {
         this.classList.toggle('fa-eye');
         this.classList.toggle('fa-eye-slash');
     });
+}
+
+function validarSenha() {
+    const password1 = document.getElementById('password1').value;
+    const senhaErro = document.getElementById('senhaErro');
+
+    if (password1.length < 4) {
+        senhaErro.style.display = 'block';
+        return false;  
+    } else {
+        senhaErro.style.display = 'none';
+        return true;  
+    }
 }
 
 // Aplicando a função de visibilidade da senha

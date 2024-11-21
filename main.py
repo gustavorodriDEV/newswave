@@ -3,9 +3,8 @@ from config.db import conexao_db, fechar_conexao
 from usuario import Usuario
 from werkzeug.security import check_password_hash
 from config.secret_key import Secret_key
-from noticias import Noticias, salvar_noticias_db, buscar_noticias_db
+from noticias import Noticias, salvar_noticias_db, buscar_noticias_db, buscar_por_categoria
 from comentario import Comentario
-from datetime import datetime
 
 app = Flask(__name__)
 
@@ -30,14 +29,14 @@ def login():
         usuario = usuario_classe.buscar_por_email(email)
 
         if usuario and check_password_hash(usuario[3], senha): 
-            session['email'] = email 
+            session['email'] = email
+            session['usuario_id'] = usuario[0] 
             flash('Login realizado com sucesso!', 'sucesso')
             return redirect(url_for('index'))
         else:
             flash('Email ou senha incorretos.', 'erro')
                 
     return render_template('login.html')
-
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
@@ -57,6 +56,9 @@ def cadastro():
 
 @app.route('/index')
 def index():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    
     noticias_classe = Noticias()
     noticias = noticias_classe.buscar_noticias()
 
@@ -77,11 +79,22 @@ def index():
     response = make_response(render_template('index.html',
                                              email=email, 
                                              articles=noticias_do_banco))
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-
     return response
+
+@app.route('/noticias_categoria', methods=['GET'])
+def noticias_categoria():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    categoria = request.args.get('categoria') 
+
+    if not categoria:
+        return redirect(url_for('index'))
+    noticias_do_banco = buscar_por_categoria(categoria)
+
+    return render_template('index.html',
+                           articles=noticias_do_banco,
+                           categoria=categoria)
+
 
 @app.route('/discutir/<int:noticia_id>')
 def discutir(noticia_id):
@@ -103,8 +116,6 @@ def discutir(noticia_id):
     else:
         flash("Notícia não encontrada", "erro")
         return redirect(url_for('index'))
-
-
 
 @app.route('/comentarios/<int:noticia_id>', methods=['GET', 'POST'])
 def comentario(noticia_id):
@@ -173,9 +184,16 @@ def editar_comentario_route(comentario_id):
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    session.pop('email', None)  
+    session.clear()
     flash('Logout realizado com sucesso.', 'sucesso')
     return redirect(url_for('login'))
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)

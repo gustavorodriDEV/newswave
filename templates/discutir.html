@@ -14,7 +14,7 @@
 
     <nav class="navbar navbar-expand-lg bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">NewsWave</a>
+            <a class="navbar-brand" href="{{ url_for('index') }}">NewsWave</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -25,12 +25,6 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Notícias</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Categorias</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contato</a>
                     </li>
                 </ul>
             </div>
@@ -83,10 +77,11 @@
                                     <h5 class="card-title mb-0">{{ comentario['nome'] }}</h5>
                                     <small class="text-muted">{{ comentario['data'] }}</small>
                                 </div>
-                                <span class="icon-menu" onclick="openOptions({{ comentario.id }})">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </span>
-                                     
+                                {% if session.get('usuario_id') == comentario['usuario_id'] %}
+                                    <span class="icon-menu" onclick="openOptions({{ comentario.id }})">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </span>
+                                {% endif %}
                             </div>
                             <div class="card-body">
                                 <p class="card-text">{{ comentario['conteudo'] }}</p>
@@ -99,6 +94,8 @@
             </div>
         </div>
     </div>
+    
+    
 
     <!-- Template do SweetAlert -->
     <template id="my-template">

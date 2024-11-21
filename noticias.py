@@ -1,8 +1,9 @@
-from flask import Flask, render_template
+from flask import Flask
 import requests
 from config.db import conexao_db, fechar_conexao
 from config.api import Chave_api
 from datetime import datetime
+from comentario import Comentario
 
 app = Flask(__name__)
 
@@ -62,8 +63,8 @@ def salvar_noticias_db(noticias):
                 data_publicacao = datetime.strptime(data_publicacao, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d %H:%M:%S")
 
             sql = """
-            INSERT INTO noticias (titulo, descricao, imagemURL, link, dataPublicacao, autor, categoria)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO noticias (titulo, descricao, imagemURL, link, dataPublicacao, autor, categoria)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
             valores = (titulo, descricao, imagemURL, link, data_publicacao, autor, categoria)
             cursor.execute(sql, valores)
@@ -91,3 +92,21 @@ def buscar_por_id(self, noticia_id):
         cursor.close()
         fechar_conexao(conn)
         return noticia
+
+def buscar_por_categoria(categoria):
+    conn = conexao_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM noticias WHERE categoria = %s", (categoria,))
+    noticias_do_banco = cursor.fetchall()
+
+    for noticia in noticias_do_banco:
+        noticia_id = noticia.get('id')
+        if noticia_id:
+            noticia['comentarios_count'] = Comentario.contar_comentarios(noticia_id)
+        else:
+            noticia['comentarios_count'] = 0
+
+    cursor.close()
+    fechar_conexao(conn)
+    return noticias_do_banco
+
