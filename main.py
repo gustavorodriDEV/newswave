@@ -5,6 +5,7 @@ from werkzeug.security import check_password_hash
 from config.secret_key import Secret_key
 from noticias import Noticias, salvar_noticias_db, buscar_noticias_db, buscar_por_categoria
 from comentario import Comentario
+from criptomoedas import Criptomoedas
 
 app = Flask(__name__)
 
@@ -26,7 +27,7 @@ def login():
         senha = request.form['password']
         
         usuario_classe = Usuario(None, None, None)
-        usuario = usuario_classe.buscar_por_email(email)
+        usuario = usuario_classe.login(email)
 
         if usuario and check_password_hash(usuario[3], senha): 
             session['email'] = email
@@ -126,7 +127,7 @@ def comentario(noticia_id):
             return redirect(url_for('login'))
 
         usuario_classe = Usuario(None, session['email'], None)
-        usuario = usuario_classe.buscar_por_email(session['email'])
+        usuario = usuario_classe.login(session['email'])
         
         if not usuario:
             flash('Usuário não encontrado.', 'erro')
@@ -181,6 +182,14 @@ def editar_comentario_route(comentario_id):
         return jsonify({"mensagem": "Comentário editado com sucesso."}), 200
     else:
         return jsonify({"erro": "Erro ao editar o comentário."}), 500
+
+@app.route('/criptomoeda', methods=['GET'])
+def criptomoedas():
+    dados = Criptomoedas.obter_criptomoedas()
+    if isinstance(dados, dict) and "error" in dados:
+        flash(dados["error"], "erro")
+        return redirect(url_for('index')) 
+    return render_template('criptomoeda.html', criptomoedas=dados)
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():

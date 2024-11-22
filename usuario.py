@@ -28,7 +28,7 @@ class Usuario:
         else:
             return False  
 
-    def buscar_por_email(self, email):
+    def login(self, email):
         con = conexao_db()
         if con:
             try:

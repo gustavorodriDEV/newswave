@@ -1,11 +1,9 @@
-from flask import Flask
 import requests
 from config.db import conexao_db, fechar_conexao
 from config.api import Chave_api
 from datetime import datetime
 from comentario import Comentario
 
-app = Flask(__name__)
 
 chave = Chave_api()
 api_key = chave.news_api()

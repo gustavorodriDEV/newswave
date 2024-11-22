@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criptomoedas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/criptomoeda.css') }}"></head>
+<body>
+    <header>
+        <h1>Informações de Criptomoedas</h1>
+        <p>Atualizado em tempo real com os dados mais recentes.</p>
+    </header>
+    <div class="container">
+        {% for cripto in criptomoedas %}
+        <div class="card">
+            <h3>{{ cripto.name }} ({{ cripto.symbol }})</h3>
+            <img src="{{ cripto.image }}" alt="Logo de {{ cripto.name }}">
+            <p>Preço Atual: R${{ "%.2f"|format(cripto.current_price) }}</p>
+            <p>Maior Preço 24h: R${{ "%.2f"|format(cripto.high_24h) }}</p>
+            <p>Menor Preço 24h: R${{ "%.2f"|format(cripto.low_24h) }}</p>
+            <p>Variação 24h: {{ "%.2f"|format(cripto.price_change_percentage_24h) }}%</p>
+        </div>
+        {% endfor %}
+    </div>
+    <footer>
+        <p>&copy; 2024 CriptoDashboard - Dados fornecidos pela CoinGecko</p>
+    </footer>
+</body>
+</html>
