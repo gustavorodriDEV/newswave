@@ -20,40 +20,59 @@ def teste_conexao():
     else:
         return "Erro ao conectar ao banco de dados."
 
+from flask import redirect, url_for
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():  
-    if request.method == 'POST':
-        email = request.form['email']
-        senha = request.form['password']
-        
-        usuario_classe = Usuario(None, None, None)
-        usuario = usuario_classe.login(email)
+    mensagem = None
+    sucesso = None  
 
-        if usuario and check_password_hash(usuario[3], senha): 
-            session['email'] = email
-            session['usuario_id'] = usuario[0] 
-            flash('Login realizado com sucesso!', 'sucesso')
-            return redirect(url_for('index'))
+    if request.method == 'POST':
+        email = request.form.get('email')
+        senha = request.form.get('password')
+
+        if not email or not senha:
+            mensagem = "Por favor, preencha todos os campos."
+            sucesso = False
         else:
-            flash('Email ou senha incorretos.', 'erro')
-                
-    return render_template('login.html')
+            usuario_classe = Usuario()
+            usuario = usuario_classe.login(email)
+
+            if usuario and check_password_hash(usuario[3], senha): 
+                session['email'] = email
+                session['usuario_id'] = int(usuario[0])  # Armazena como inteiro
+                mensagem = "Login realizado com sucesso!"
+                sucesso = True
+                # Redireciona para a rota associada ao index.html
+                return redirect(url_for('index'))  
+            else:
+                mensagem = "E-mail ou senha incorretos."
+                sucesso = False
+
+    return render_template('login.html', mensagem=mensagem, sucesso=sucesso)
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
-    if request.method == 'POST':
+    mensagem = None  # Inicializa como None para não exibir mensagem por padrão
+    if request.method == 'POST':  # Somente processa o formulário após o envio
         nome = request.form['username']
         email = request.form['email']
         senha = request.form['password']
 
         novo_usuario = Usuario(nome, email, senha)
-        if novo_usuario.cadastrar_usuario():  
-            flash('Cadastro realizado com sucesso!', 'sucesso')
-            return redirect(url_for('login'))  
+        resultado = novo_usuario.cadastrar_usuario()
+
+        if resultado == "email_ja_existe":
+            mensagem = "E-mail já cadastrado. Por favor, utilize outro."
+        elif resultado == "cadastrado_com_sucesso":
+            return redirect(url_for('login')) 
+        elif resultado == "erro_ao_cadastrar":
+            mensagem = "Erro ao cadastrar o usuário. Tente novamente mais tarde."
         else:
-            flash('Erro ao cadastrar, tente novamente.', 'erro')
-    
-    return render_template('cadastro.html')
+            mensagem = "E-mail já cadastrado no sistema."
+
+    return render_template('login.html', mensagem=mensagem)
+
 
 @app.route('/index')
 def index():
@@ -108,6 +127,7 @@ def discutir(noticia_id):
     noticia = cursor.fetchone()
 
     comentarios = Comentario.obter_comentarios(noticia_id)
+    print("Comentários retornados:", comentarios)  # Depuração
 
     cursor.close()
     fechar_conexao(conn)
@@ -117,6 +137,7 @@ def discutir(noticia_id):
     else:
         flash("Notícia não encontrada", "erro")
         return redirect(url_for('index'))
+
 
 @app.route('/comentarios/<int:noticia_id>', methods=['GET', 'POST'])
 def comentario(noticia_id):

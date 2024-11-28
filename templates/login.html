@@ -9,12 +9,32 @@
 
 </head>
 <body>
+
+
+<!-- Inclua a biblioteca do SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Verifique se a mensagem está definida -->
+{% if mensagem %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        Swal.fire({
+            title: "Mensagem",
+            text: "{{ mensagem }}",
+            icon: "{{ 'success' if 'sucesso' in mensagem else 'error' }}",
+            confirmButtonText: "OK"
+        });
+    });
+</script>
+{% endif %}
+
+
     <div class="login-cadastro" id="loginCadastro">
         <div class="inner-box">
             <div class="login">
                 <h3>Login </h3><br>
                 <form method="POST" action="{{ url_for('login') }}">
-					<input type="text" id="email" name="email" placeholder="Email" required class="custom-input"><br><br>
+                    <input type="text" id="email" name="email" placeholder="Email" required class="custom-input"><br><br>
                     <div class="password-container">
                         <input type="password" id="password" name="password" placeholder="Senha" required class="custom-input">
                         <i class="fas fa-eye" id="togglePassword"></i>
@@ -23,6 +43,7 @@
                     <span class="toggle-form" onclick="flipForm()">Não tem uma conta? Cadastre-se</span>
                 </form>
             </div>
+            
             <div class="cadastro">
                 <h3>Cadastre-se</h3>
                 <form method="POST" action="{{ url_for('cadastro') }}">
@@ -40,6 +61,8 @@
                     <span class="toggle-form" onclick="flipForm()">Já tem uma conta? Faça login</span>
                 </form>
             </div>
+            
+            
         </div>
     </div>
 

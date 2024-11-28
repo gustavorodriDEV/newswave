@@ -32,7 +32,7 @@ class Comentario:
         conn = conexao_db()
         cursor = conn.cursor(dictionary=True)
         sql = """
-            SELECT c.id, c.conteudo, c.data, u.nome
+            SELECT c.id, c.conteudo, c.data, c.usuario_id, u.nome
             FROM comentarios c
             JOIN usuarios u ON c.usuario_id = u.id
             WHERE c.noticia_id = %s;
@@ -47,6 +47,7 @@ class Comentario:
         finally:
             cursor.close()
             fechar_conexao(conn)
+
 
     @staticmethod
     def contar_comentarios(noticia_id):

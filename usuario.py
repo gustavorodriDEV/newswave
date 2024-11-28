@@ -1,8 +1,5 @@
-from flask import Flask, render_template, request, redirect, flash, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from config.db import conexao_db, fechar_conexao
-
-app = Flask(__name__)
 
 class Usuario:
     def __init__(self, nome=None, email=None, senha=None):
@@ -15,19 +12,28 @@ class Usuario:
         if con:
             try:
                 cursor = con.cursor()
+
+                cursor.execute("SELECT * FROM usuarios WHERE email = %s", (self.email,))
+                if cursor.fetchone():
+                    return "O e-mail já está cadastrado. Tente outro."
+        
                 senha_hash = generate_password_hash(self.senha)
-                cursor.execute("INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s)", (self.nome, self.email, senha_hash))
+                cursor.execute(
+                    "INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s)", 
+                    (self.nome, self.email, senha_hash)
+                )
                 con.commit()
-                return True  
+                return "Usuário cadastrado com sucesso!"
             except Exception as e:
                 print(f"Erro ao cadastrar: {e}")
                 con.rollback()
-                return False  
+                return "Erro ao cadastrar usuário."
             finally:
                 fechar_conexao(con)
         else:
-            return False  
+            return "Erro na conexão com o basadaafnco de dados."
 
+    
     def login(self, email):
         con = conexao_db()
         if con:

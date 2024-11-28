@@ -95,6 +95,14 @@ padding: 3px 8px;
 border-radius: 4px;
 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); 
 }
+.text-center {
+  font-size: 18px;
+  font-weight: bold;
+  color: #dc3545; /* Cor vermelha */
+  background-color: #f8d7da; /* Cor de fundo suave */
+  padding: 10px;
+  border-radius: 5px;
+}
 
 
 @media (max-width: 768px) {
