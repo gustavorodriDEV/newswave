@@ -46,12 +46,37 @@
             <p>Preço Atual: R${{ "%.2f"|format(cripto.current_price) }}</p>
             <p>Maior Preço 24h: R${{ "%.2f"|format(cripto.high_24h) }}</p>
             <p>Menor Preço 24h: R${{ "%.2f"|format(cripto.low_24h) }}</p>
-            <p>Variação 24h: {{ "%.2f"|format(cripto.price_change_percentage_24h) }}%</p>
+            <p class="variacao24h">Variação 24h: {{ "%.2f"|format(cripto.price_change_percentage_24h) }}%</p>
         </div>
         {% endfor %}
     </div>
+
     <footer>
         <p>&copy; 2024 CriptoDashboard - Dados fornecidos pela CoinGecko</p>
     </footer>
+
+    <script>
+        const variacoes = document.querySelectorAll('.variacao24h');
+        variacoes.forEach(variacao => {
+            const match = variacao.textContent.match(/-?\d+(\.\d+)?(?=%)/);
+    
+            if (match) {
+                const valor = parseFloat(match[0]);
+                
+                console.log(`Valor extraído: ${valor}`);
+
+                if (valor > 0) {
+                    variacao.style.color = 'green'; 
+                } else if (valor < 0) {
+                    variacao.style.color = 'red'; 
+                } else {
+                    variacao.style.color = 'black';
+                }
+            } else {
+                console.error("Não foi possível extrair o valor de variação para:", variacao.textContent);
+            }
+        });
+    </script>
+    
 </body>
 </html>

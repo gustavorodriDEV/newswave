@@ -58,6 +58,15 @@ footer {
     font-size: 14px;
     color: #777;
 }
+
+.positivo {
+    color: green;
+}
+
+.negativo {
+    color: red;
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 10px;

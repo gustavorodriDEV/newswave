@@ -50,5 +50,3 @@ class Usuario:
 
     def validar_login(self, senha_digitada):
         return check_password_hash(self.senha, senha_digitada)
-
-

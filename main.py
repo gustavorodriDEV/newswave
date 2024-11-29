@@ -54,25 +54,28 @@ def login():
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     mensagem = None  # Inicializa como None para não exibir mensagem por padrão
+
     if request.method == 'POST':  # Somente processa o formulário após o envio
-        nome = request.form['username']
-        email = request.form['email']
-        senha = request.form['password']
+        nome = request.form.get('username')
+        email = request.form.get('email')
+        senha = request.form.get('password')
 
-        novo_usuario = Usuario(nome, email, senha)
-        resultado = novo_usuario.cadastrar_usuario()
-
-        if resultado == "email_ja_existe":
-            mensagem = "E-mail já cadastrado. Por favor, utilize outro."
-        elif resultado == "cadastrado_com_sucesso":
-            return redirect(url_for('login')) 
-        elif resultado == "erro_ao_cadastrar":
-            mensagem = "Erro ao cadastrar o usuário. Tente novamente mais tarde."
+        # Valida se os campos foram preenchidos
+        if not nome or not email or not senha:
+            mensagem = "Por favor, preencha todos os campos."
         else:
-            mensagem = "E-mail já cadastrado no sistema."
+            novo_usuario = Usuario(nome, email, senha)
+            resultado = novo_usuario.cadastrar_usuario()
+
+            # Lógica para exibir mensagens com base no retorno do método
+            if resultado == "O e-mail já está cadastrado. Tente outro.":
+                mensagem = resultado
+            elif resultado == "Usuário cadastrado com sucesso!":
+                return redirect(url_for('login'))  # Redireciona para a página de login
+            else:
+                mensagem = resultado  # Mensagem genérica de erro retornada pela classe
 
     return render_template('login.html', mensagem=mensagem)
-
 
 @app.route('/index')
 def index():
